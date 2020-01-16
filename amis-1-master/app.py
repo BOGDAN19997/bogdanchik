@@ -40,10 +40,10 @@ class ormUsers(db.Model):
     id = Column(Integer, Sequence('users_id_seq', start=1, increment=1), primary_key=True)
     login = Column(String(30), UniqueConstraint(name='users_login_key'), nullable=False)
 
-    password = Column(String(50), nullable=False)
-    email = Column(String(50), UniqueConstraint(name='users_email_key'), nullable=False)
+    #password = Column(String(50), nullable=False)
+    #email = Column(String(50), UniqueConstraint(name='users_email_key'), nullable=False)
     lastname = Column(String(30))
-    firstname = Column(String(30))
+    #firstname = Column(String(30))
     created = Column(DateTime, default=datetime.datetime.now())
     userRelationShip = relationship("ormReposytoty", back_populates="user_Relation_Ship")
 
