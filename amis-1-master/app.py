@@ -35,7 +35,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-class ormUsers(db.Model):
+class ormUser(db.Model):
     __tablename__ = 'users'
     id = Column(Integer, Sequence('users_id_seq', start=1, increment=1), primary_key=True)
     login = Column(String(30), UniqueConstraint(name='users_login_key'), nullable=False)
@@ -94,7 +94,7 @@ def hello_world():
 @app.route('/all/user')
 def all_user():
     name = "user"
-    user_db = db.session.query(ormUsers).all()
+    user_db = db.session.query(ormUser).all()
     user = []
     for row in user_db:
         user.append({"id": row.id, "login": row.login, "password": row.password, "email": row.email,
@@ -145,13 +145,13 @@ def create_user():
             return render_template('create_user.html', form=form, form_name="New user", action="create/user")
         else:
 
-            ids = db.session.query(ormUsers).all()
+            ids = db.session.query(ormUser).all()
             check = True
             for row in ids:
                 if row.login == form.login.data:
                     check = False
 
-            new_var = ormUsers(
+            new_var = ormUser(
 
                 login=form.login.data,
                 password=form.password.data,
@@ -180,7 +180,7 @@ def create_reposytory():
                                    action="create/reposytory")
         else:
 
-            ids = db.session.query(ormUsers).all()
+            ids = db.session.query(ormUser).all()
             check = False
             for row in ids:
                 if row.id == form.user_id.data:
@@ -267,7 +267,7 @@ def create_file():
 def delete_user():
     id = request.args.get('id')
 
-    result = db.session.query(ormUsers).filter(ormUsers.id == id).one()
+    result = db.session.query(ormUser).filter(ormUser.id == id).one()
 
     db.session.delete(result)
     db.session.commit()
@@ -321,7 +321,7 @@ def edit_user():
     id = request.args.get('id')
     if request.method == 'GET':
 
-        users = db.session.query(ormUsers).filter(ormUsers.id == id).one()
+        users = db.session.query(ormUser).filter(ormUser.id == id).one()
 
         form.login.data = users.login
         form.password.data = users.password
@@ -340,7 +340,7 @@ def edit_user():
         else:
 
             # find user
-            var = db.session.query(ormUsers).filter(ormUsers.id == id).one()
+            var = db.session.query(ormUser).filter(ormUser.id == id).one()
             print(var)
 
             # update fields from form data
@@ -477,9 +477,9 @@ def dashboard():
 
     query = (
         db.session.query(
-            func.count(ormUsers.id),
-            ormUsers.created
-        ).group_by(ormUsers.created)
+            func.count(ormUser.id),
+            ormUser.created
+        ).group_by(ormUser.created)
     ).all()
 
     dates, counts = zip(*query)
