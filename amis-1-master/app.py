@@ -65,9 +65,9 @@ class ormProject(db.Model):
     id = Column(Integer, Sequence('project_id_seq', start=1, increment=1), primary_key=True)
     name = Column(String(30), nullable=False)
     description = Column(Text)
-    created = Column(DateTime, default=datetime.datetime.now())
+    #created = Column(DateTime, default=datetime.datetime.now())
     countoffiles = Column(Integer, CheckConstraint('countoffiles >= 0'), nullable=False, default=0)
-    reposytoty_id = Column(Integer, ForeignKey('reposytoty.id'))
+    #reposytoty_id = Column(Integer, ForeignKey('reposytoty.id'))
     reposytoty_Relation_Ship = relationship("ormReposytoty", back_populates="reposytotyRelationShip")
     fileRelationShip = relationship("ormFiles", back_populates="file_Relation_Ship")
 
