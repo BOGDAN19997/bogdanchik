@@ -51,11 +51,11 @@ class ormUsers(db.Model):
 class ormReposytoty(db.Model):
     __tablename__ = 'reposytoty'
     id = Column(Integer, Sequence('reposytoty_id_seq', start=1, increment=1), primary_key=True)
-    name = Column(String(30), nullable=False)
+    #name = Column(String(30), nullable=False)
     description = Column(Text)
     created = Column(DateTime, default=datetime.datetime.now())
     countofprojects = Column(Integer, CheckConstraint('countofprojects >= 0'), nullable=False, default=0)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    #user_id = Column(Integer, ForeignKey('users.id'))
     user_Relation_Ship = relationship("ormUsers", back_populates="userRelationShip")
     reposytotyRelationShip = relationship("ormProject", back_populates="reposytoty_Relation_Ship")
 
