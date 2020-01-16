@@ -56,7 +56,7 @@ class ormReposytoty(db.Model):
     created = Column(DateTime, default=datetime.datetime.now())
     countofprojects = Column(Integer, CheckConstraint('countofprojects >= 0'), nullable=False, default=0)
     #user_id = Column(Integer, ForeignKey('users.id'))
-    user_Relation_Ship = relationship("ormUsers", back_populates="userRelationShip")
+    user_Relation_Ship = relationship("ormUser", back_populates="userRelationShip")
     reposytotyRelationShip = relationship("ormProject", back_populates="reposytoty_Relation_Ship")
 
 
@@ -69,10 +69,10 @@ class ormProject(db.Model):
     countoffiles = Column(Integer, CheckConstraint('countoffiles >= 0'), nullable=False, default=0)
     #reposytoty_id = Column(Integer, ForeignKey('reposytoty.id'))
     reposytoty_Relation_Ship = relationship("ormReposytoty", back_populates="reposytotyRelationShip")
-    fileRelationShip = relationship("ormFiles", back_populates="file_Relation_Ship")
+    fileRelationShip = relationship("ormFile", back_populates="file_Relation_Ship")
 
 
-class ormFiles(db.Model):
+class ormFile(db.Model):
     __tablename__ = 'files'
     id = Column(Integer, Sequence('files_id_seq', start=1, increment=1), primary_key=True)
     name = Column(String(30), nullable=False)
@@ -127,7 +127,7 @@ def all_project():
 @app.route('/all/file')
 def all_file():
     name = "file"
-    file_db = db.session.query(ormFiles).all()
+    file_db = db.session.query(ormFile).all()
     file = []
     for row in file_db:
         file.append({"id": row.id, "name": row.name, "file_text": row.file_text, "expansion": row.expansion,
@@ -246,7 +246,7 @@ def create_file():
                 if row.id == form.project_id.data:
                     check = True
 
-            new_var = ormFiles(
+            new_var = ormFile(
 
                 name=form.name.data,
                 file_text=form.file_text.data,
@@ -307,7 +307,7 @@ def delete_project():
 def delete_file():
     id = request.args.get('id')
 
-    result = db.session.query(ormFiles).filter(ormFiles.id == id).one()
+    result = db.session.query(ormFile).filter(ormFile.id == id).one()
 
     db.session.delete(result)
     db.session.commit()
@@ -434,7 +434,7 @@ def edit_file():
     id = request.args.get('id')
     if request.method == 'GET':
 
-        file = db.session.query(ormFiles).filter(ormFiles.id == id).one()
+        file = db.session.query(ormFile).filter(ormFile.id == id).one()
 
         form.name.data = file.name
         form.file_text.data = file.file_text
@@ -452,7 +452,7 @@ def edit_file():
         else:
 
             # find user
-            var = db.session.query(ormFiles).filter(ormFiles.id == id).one()
+            var = db.session.query(ormFile).filter(ormFile.id == id).one()
             print(var)
 
             # update fields from form data
@@ -471,8 +471,8 @@ def dashboard():
     query1 = (
         db.session.query(
             func.count(),
-            ormFiles.expansion
-        ).group_by(ormFiles.expansion)
+            ormFile.expansion
+        ).group_by(ormFile.expansion)
     ).all()
 
     query = (
@@ -509,8 +509,8 @@ def dashboard():
 def claster():
     df = pd.DataFrame()
 
-    for name, expansion in db.session.query(ormProject.name, ormFiles.expansion).join(ormFiles,
-                                                                                      ormProject.id == ormFiles.project_id):
+    for name, expansion in db.session.query(ormProject.name, ormFile.expansion).join(ormFile,
+                                                                                      ormProject.id == ormFile.project_id):
         print(name, expansion)
         df = df.append({"name": name, "expansion": expansion}, ignore_index=True)
 
@@ -531,8 +531,8 @@ def claster():
     query1 = (
         db.session.query(
             func.count(),
-            ormFiles.expansion
-        ).group_by(ormFiles.expansion)
+            ormFile.expansion
+        ).group_by(ormFile.expansion)
     ).all()
     skills, user_count = zip(*query1)
     pie = go.Pie(
@@ -593,7 +593,7 @@ def correlation():
 @app.route('/clasification', methods=['GET', 'POST'])
 def clasification():
     df = pd.DataFrame()
-    for file_text, rating in db.session.query(ormFiles.file_text, ormFiles.rating):
+    for file_text, rating in db.session.query(ormFile.file_text, ormFile.rating):
         print(file_text, rating)
         df = df.append({"file_name": file_text, "rating": float(rating)}, ignore_index=True)
     # db.session.close()
@@ -627,7 +627,7 @@ def search():
             return render_template('search.html', form=form, form_name="Search", action="search")
         else:
             list_event.clear()
-            for id, name, Expansion in db.session.query(ormFiles.id, ormFiles.name, ormFiles.expansion
+            for id, name, Expansion in db.session.query(ormFile.id, ormFile.name, ormFile.expansion
                                                         ):
                 if name == form.nameOfProject.data and Expansion == form.Expansion.data:
                     list_event.append(id)
@@ -642,7 +642,7 @@ def searchList():
     try:
         for i in list_event:
             version,rating = db.session \
-                .query(ormFiles.versions, ormFiles.rating).filter(ormFiles.id == i).one()
+                .query(ormFile.versions, ormFile.rating).filter(ormFile.id == i).one()
             res.append(
                 {"version": version, "rating": rating})
     except:
