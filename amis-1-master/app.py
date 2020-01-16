@@ -39,6 +39,7 @@ class ormUsers(db.Model):
     __tablename__ = 'users'
     id = Column(Integer, Sequence('users_id_seq', start=1, increment=1), primary_key=True)
     login = Column(String(30), UniqueConstraint(name='users_login_key'), nullable=False)
+
     password = Column(String(50), nullable=False)
     email = Column(String(50), UniqueConstraint(name='users_email_key'), nullable=False)
     lastname = Column(String(30))
